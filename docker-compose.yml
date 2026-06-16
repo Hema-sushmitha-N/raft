@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  node1:
+    build: .
+    command: ["-id", "node1", "-grpc-port", "50051", "-metrics-port", "9091"]
+    ports:
+      - "9091:9091"
+      - "50051:50051"
+    tmpfs:
+      - /wal
+
+  node2:
+    build: .
+    command: ["-id", "node2", "-grpc-port", "50052", "-metrics-port", "9092"]
+    ports:
+      - "9092:9092"
+      - "50052:50052"
+    tmpfs:
+      - /wal
+
+  node3:
+    build: .
+    command: ["-id", "node3", "-grpc-port", "50053", "-metrics-port", "9093"]
+    ports:
+      - "9093:9093"
+      - "50053:50053"
+    tmpfs:
+      - /wal
+
+  node4:
+    build: .
+    command: ["-id", "node4", "-grpc-port", "50054", "-metrics-port", "9094"]
+    ports:
+      - "9094:9094"
+      - "50054:50054"
+    tmpfs:
+      - /wal
+
+  node5:
+    build: .
+    command: ["-id", "node5", "-grpc-port", "50055", "-metrics-port", "9095"]
+    ports:
+      - "9095:9095"
+      - "50055:50055"
+    tmpfs:
+      - /wal
