@@ -5,21 +5,22 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.etcd.io/raft/v3/raftpb"
 )
 
 var (
-	nodeID = flag.String("id", "node1", "Node ID")
-	grpcPort = flag.String("grpc-port", "50051", "gRPC port")
+	nodeID      = flag.String("id", "node1", "Node ID")
+	grpcPort    = flag.String("grpc-port", "50051", "gRPC port")
 	metricsPort = flag.String("metrics-port", "9090", "Prometheus metrics port")
+	walDir      = flag.String("wal-dir", "/wal", "WAL directory (tmpfs)")
 
 	fsyncDuration = prometheus.NewHistogram(prometheus.HistogramOpts{
 		Name:    "fsync_duration_ns",
-		Help:    "Duration of fsync calls in nanoseconds",
+		Help:    "Duration of real fsync calls in nanoseconds",
 		Buckets: prometheus.ExponentialBuckets(1000, 2, 20),
 	})
 )
@@ -28,29 +29,34 @@ func init() {
 	prometheus.MustRegister(fsyncDuration)
 }
 
-func simulateFsync() {
-	start := time.Now()
-	// Simulate writing to WAL (tmpfs)
-	f, err := os.CreateTemp("/wal", "wal-*")
-	if err != nil {
-		log.Printf("WAL write error: %v", err)
-		return
-	}
-	defer os.Remove(f.Name())
-	f.WriteString("raft-log-entry")
-	f.Sync() // This is the actual fsync
-	f.Close()
-	fsyncDuration.Observe(float64(time.Since(start).Nanoseconds()))
-}
-
 func main() {
 	flag.Parse()
-	log.Printf("Starting node %s | gRPC: %s | Metrics: %s", *nodeID, *grpcPort, *metricsPort)
+	log.Printf("Starting node %s | gRPC: %s | Metrics: %s | WAL: %s",
+		*nodeID, *grpcPort, *metricsPort, *walDir)
 
-	// Simulate periodic WAL writes (stand-in for real Raft appends)
+	// Create instrumented storage — this measures real fsync latency
+	storage := NewInstrumentedStorage(*nodeID, *walDir)
+
+	// Simulate Raft log appends (entries arriving from leader)
 	go func() {
+		entryIndex := uint64(1)
 		for {
-			simulateFsync()
+			// Simulate a log entry arriving every 100ms
+			idx := entryIndex
+            term := uint64(1)
+            etype := raftpb.EntryNormal
+            entry := &raftpb.Entry{
+                Index: &idx,
+                Term:  &term,
+                Type:  &etype,
+                Data:  []byte(fmt.Sprintf("write-op-%d-from-%s", entryIndex, *nodeID)),
+            }
+
+			    if err := storage.Append([]*raftpb.Entry{entry}); err != nil {
+				log.Printf("Append error: %v", err)
+			}
+
+			entryIndex++
 			time.Sleep(100 * time.Millisecond)
 		}
 	}()
@@ -59,6 +65,9 @@ func main() {
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "ok")
+	})
+	http.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "node=%s grpc=%s wal=%s\n", *nodeID, *grpcPort, *walDir)
 	})
 
 	addr := fmt.Sprintf(":%s", *metricsPort)
