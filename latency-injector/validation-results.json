@@ -1,0 +1,82 @@
+[
+  {
+    "node": "node1",
+    "profile": "moderate",
+    "target_ms": 1,
+    "measured_ms": 4.096,
+    "deviation_ms": 3.096,
+    "pass": true
+  },
+  {
+    "node": "node2",
+    "profile": "moderate",
+    "target_ms": 1,
+    "measured_ms": 4.096,
+    "deviation_ms": 3.096,
+    "pass": true
+  },
+  {
+    "node": "node3",
+    "profile": "moderate",
+    "target_ms": 1,
+    "measured_ms": 8.192,
+    "deviation_ms": 7.192,
+    "pass": false
+  },
+  {
+    "node": "node4",
+    "profile": "moderate",
+    "target_ms": 5,
+    "measured_ms": 8.192,
+    "deviation_ms": 3.192,
+    "pass": true
+  },
+  {
+    "node": "node5",
+    "profile": "moderate",
+    "target_ms": 5,
+    "measured_ms": 8.192,
+    "deviation_ms": 3.192,
+    "pass": true
+  },
+  {
+    "node": "node1",
+    "profile": "severe",
+    "target_ms": 1,
+    "measured_ms": 4.096,
+    "deviation_ms": 3.096,
+    "pass": true
+  },
+  {
+    "node": "node2",
+    "profile": "severe",
+    "target_ms": 1,
+    "measured_ms": 2.048,
+    "deviation_ms": 1.048,
+    "pass": true
+  },
+  {
+    "node": "node3",
+    "profile": "severe",
+    "target_ms": 1,
+    "measured_ms": 2.048,
+    "deviation_ms": 1.048,
+    "pass": true
+  },
+  {
+    "node": "node4",
+    "profile": "severe",
+    "target_ms": 10,
+    "measured_ms": 16.384,
+    "deviation_ms": 6.384,
+    "pass": true
+  },
+  {
+    "node": "node5",
+    "profile": "severe",
+    "target_ms": 10,
+    "measured_ms": 16.384,
+    "deviation_ms": 6.384,
+    "pass": true
+  }
+]

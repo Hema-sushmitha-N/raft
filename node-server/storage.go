@@ -11,17 +11,19 @@ import (
 )
 
 type InstrumentedStorage struct {
-	mu     sync.Mutex
-	ms     *raft.MemoryStorage
-	walDir string
-	nodeID string
+	mu           sync.Mutex
+	ms           *raft.MemoryStorage
+	walDir       string
+	nodeID       string
+	extraDelayMs int
 }
 
-func NewInstrumentedStorage(nodeID, walDir string) *InstrumentedStorage {
+func NewInstrumentedStorage(nodeID, walDir string, extraDelayMs int) *InstrumentedStorage {
 	return &InstrumentedStorage{
-		ms:     raft.NewMemoryStorage(),
-		walDir: walDir,
-		nodeID: nodeID,
+		ms:           raft.NewMemoryStorage(),
+		walDir:       walDir,
+		nodeID:       nodeID,
+		extraDelayMs: extraDelayMs,
 	}
 }
 
@@ -36,7 +38,14 @@ func (s *InstrumentedStorage) realFsync(data []byte) error {
 	if _, err := f.Write(data); err != nil {
 		return err
 	}
-	return f.Sync()
+	if err := f.Sync(); err != nil {
+		return err
+	}
+	// Apply artificial delay if set (simulates slow disk via tc netem equivalent)
+	if s.extraDelayMs > 0 {
+		time.Sleep(time.Duration(s.extraDelayMs) * time.Millisecond)
+	}
+	return nil
 }
 
 func (s *InstrumentedStorage) Append(entries []*raftpb.Entry) error {

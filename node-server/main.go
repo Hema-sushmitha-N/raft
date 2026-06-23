@@ -17,6 +17,7 @@ var (
 	grpcPort    = flag.String("grpc-port", "50051", "gRPC port")
 	metricsPort = flag.String("metrics-port", "9090", "Prometheus metrics port")
 	walDir      = flag.String("wal-dir", "/wal", "WAL directory (tmpfs)")
+	extraDelayMs = flag.Int("extra-delay-ms", 0, "Extra artificial delay in ms added to each fsync (set by injector)")
 
 	fsyncDuration = prometheus.NewHistogram(prometheus.HistogramOpts{
 		Name:    "fsync_duration_ns",
@@ -35,7 +36,7 @@ func main() {
 		*nodeID, *grpcPort, *metricsPort, *walDir)
 
 	// Create instrumented storage — this measures real fsync latency
-	storage := NewInstrumentedStorage(*nodeID, *walDir)
+	storage := NewInstrumentedStorage(*nodeID, *walDir, *extraDelayMs)
 
 	// Simulate Raft log appends (entries arriving from leader)
 	go func() {
