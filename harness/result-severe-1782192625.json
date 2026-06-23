@@ -1,0 +1,37 @@
+[
+  {
+    "node": "node1",
+    "profile": "severe",
+    "p50_ms": 0.128,
+    "p99_ms": 0.256,
+    "timestamp": "2026-06-23T05:30:25.664391"
+  },
+  {
+    "node": "node2",
+    "profile": "severe",
+    "p50_ms": 0.128,
+    "p99_ms": 0.256,
+    "timestamp": "2026-06-23T05:30:25.687988"
+  },
+  {
+    "node": "node3",
+    "profile": "severe",
+    "p50_ms": 0.128,
+    "p99_ms": 0.256,
+    "timestamp": "2026-06-23T05:30:25.705325"
+  },
+  {
+    "node": "node4",
+    "profile": "severe",
+    "p50_ms": 0.128,
+    "p99_ms": 0.256,
+    "timestamp": "2026-06-23T05:30:25.730738"
+  },
+  {
+    "node": "node5",
+    "profile": "severe",
+    "p50_ms": 0.128,
+    "p99_ms": 0.256,
+    "timestamp": "2026-06-23T05:30:25.761299"
+  }
+]
