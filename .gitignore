@@ -1,1 +1,19 @@
+# Python installed packages
+Lib/
+scripts/
+share/
+__pycache__/
+*.pyc
+
+# Compiled binaries
+*.exe
+
+# Screenshots and images at root
+*.png
+
+# Python virtual env if any
+venv/
+env/
+
+# IDE
 .idea
